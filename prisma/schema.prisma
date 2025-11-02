@@ -1,0 +1,50 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL") 
+}
+
+enum Role {
+  ADMIN
+  USER
+  HOSTELER
+}
+
+model Users {
+  id          Int        @id @default(autoincrement())
+  name        String
+  username    String     @unique
+  email       String     @unique
+  role        Role       @default(USER)
+  description String?
+  createdAt   DateTime   @default(now())
+  updatedAt   DateTime   @updatedAt
+  bookings    Bookings[]
+}
+
+model Hostelers {
+  id          Int        @id @default(autoincrement())
+  name        String
+  roomNo      String
+  description String?
+  joinDate    DateTime   @default(now())
+  createdAt   DateTime   @default(now())
+  updatedAt   DateTime   @updatedAt
+  bookings    Bookings[]
+}
+
+model Bookings {
+  id          Int        @id @default(autoincrement())
+  userId      Int
+  hostelerId  Int
+  description String?
+  bookedAt    DateTime   @default(now())
+  createdAt   DateTime   @default(now())
+  updatedAt   DateTime   @updatedAt
+
+  user        Users      @relation(fields: [userId], references: [id])
+  hosteler    Hostelers  @relation(fields: [hostelerId], references: [id])
+}
